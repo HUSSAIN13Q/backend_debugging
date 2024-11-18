@@ -1,4 +1,4 @@
-const todoModel = require("./../../db/models/todos");
+const todoModel = require("../../db/models/todo");
 
 const getAllTodo = (req, res) => {
   todoModel
@@ -26,7 +26,7 @@ const getTodoById = (req, res) => {
 
 const getCompletedTodos = (req, res) => {
   todoModel
-    .find({ isDel: false, isCompleted: true })
+    .find({ isCompleted: true })
     .then((result) => {
       res.status(200).json(result);
     })
@@ -36,16 +36,17 @@ const getCompletedTodos = (req, res) => {
 };
 
 const createTodo = (req, res) => {
-  const todo = req.body.todo;
-
+  const task = req.body.task;
+  console.log(req.body.task);
   const newTodo = new todoModel({
-    todo,
+    task,
   });
+  console.log("hiii", newTodo);
 
   newTodo
     .save()
     .then((result) => {
-      res.status(200).json(result);
+      res.status(201).json(result);
     })
     .catch((err) => {
       res.status(400).json(err);
@@ -54,12 +55,13 @@ const createTodo = (req, res) => {
 
 const completeTodo = (req, res) => {
   const { id } = req.params;
+  console.log("ID:", id);
 
   todoModel
-    .findOneAndUpdate({ id }, { isCompleted: true }, { new: true })
+    .findOneAndUpdate({ _id: id }, { isCompleted: true }, { new: true })
     .exec()
     .then((result) => {
-      res.status(200).json(result);
+      res.status(204).json(result);
     })
     .catch((err) => {
       res.status(400).json(err);
@@ -73,7 +75,7 @@ const updateTodo = (req, res) => {
   todoModel
     .findOneAndUpdate({ _id: id }, { task: newTask }, { new: true })
     .then((result) => {
-      res.status(200).json(result);
+      res.status(204).json(result);
     })
     .catch((err) => {
       res.status(400).json(err);
@@ -86,18 +88,19 @@ const deleteTodo = (req, res) => {
   todoModel
     .findOneAndUpdate({ _id: id }, { isDel: true })
     .then((result) => {
-      res.status(200).json(result);
+      res.status(204).json(result);
     })
     .catch((err) => {
       res.status(400).json(err);
     });
 };
 
-module.export = {
+module.exports = {
   getAllTodo,
   getTodoById,
   getCompletedTodos,
   createTodo,
   completeTodo,
   deleteTodo,
+  updateTodo,
 };
